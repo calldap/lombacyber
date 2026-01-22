@@ -12,15 +12,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS dengan ANIMASI
+# Custom CSS dengan ANIMASI KABUT (MIASMA)
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap');
 
         /* --- 1. Background & Font --- */
         .stApp {
-            background-color: #121212;
-            background-image: linear-gradient(315deg, #0b0b0b 0%, #1f1f1f 74%);
+            background-color: #0e0e0e;
+            /* Gradient background yang lebih gelap dan misterius */
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
             color: #dcdcdc;
             font-family: 'Lato', sans-serif;
         }
@@ -33,22 +34,48 @@ st.markdown("""
 
         /* --- 2. ANIMASI KEYFRAMES --- */
         
-        /* Animasi Berdenyut (Breathing) untuk Serigala */
         @keyframes pulse {
             0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(201, 56, 56, 0.0)); }
             50% { transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(201, 56, 56, 0.6)); }
             100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(201, 56, 56, 0.0)); }
         }
 
-        /* Animasi Muncul dari Bawah (Fade In Up) untuk Hasil */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translate3d(0, 20px, 0); }
             to { opacity: 1; transform: translate3d(0, 0, 0); }
         }
 
-        /* --- 3. Applying Animations --- */
-        
-        /* Terapkan ke Emoji Serigala */
+        /* Animasi Kabut Bergerak */
+        @keyframes fogFlow {
+            0% { background-position: 0% 50%; opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { background-position: 100% 50%; opacity: 0; }
+        }
+
+        /* --- 3. CLASS UNTUK EFEK KABUT (MIASMA) --- */
+        .miasma-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Agar klik tembus ke bawah */
+            z-index: 9999;
+            /* Membuat efek kabut menggunakan gradient transparan */
+            background: linear-gradient(
+                120deg, 
+                rgba(20, 40, 20, 0.0) 0%, 
+                rgba(50, 80, 50, 0.4) 30%, 
+                rgba(100, 100, 100, 0.2) 50%, 
+                rgba(50, 80, 50, 0.4) 70%, 
+                rgba(20, 40, 20, 0.0) 100%
+            );
+            background-size: 200% 200%;
+            animation: fogFlow 2.5s ease-in-out forwards;
+        }
+
+        /* --- 4. UI Components Styling --- */
         .wolf-anim {
             font-size: 80px;
             text-align: center;
@@ -56,16 +83,15 @@ st.markdown("""
             cursor: pointer;
         }
 
-        /* Terapkan ke Box Hasil */
         .result-box {
             animation: fadeInUp 0.8s ease-out;
             border: 1px solid #c93838;
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
             background-color: #1a0505;
+            margin-top: 20px;
         }
 
-        /* --- 4. UI Components Styling --- */
         .quote {
             font-family: 'Cinzel', serif;
             color: #d4af37;
@@ -98,7 +124,6 @@ st.markdown("""
             background-color: #c93838;
             color: #ffffff;
             box-shadow: 0 0 20px #c93838;
-            transform: scale(1.02);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -169,29 +194,24 @@ def process_cipher(text, sign, mutagen, mode="encrypt"):
 # ===============================
 
 col1, col2 = st.columns([1, 4])
-
 with col1:
-    # MENERAPKAN KELAS ANIMASI 'wolf-anim' PADA EMOJI
     st.markdown('<div class="wolf-anim">🐺</div>', unsafe_allow_html=True)
-
 with col2:
     st.title("The Wolf Cipher")
-    st.markdown('<div class="quote">"Medallion\'s humming... magic is near."</div>', unsafe_allow_html=True)
+    st.markdown('<div class="quote">"Fog\'s thick as curdled milk..."</div>', unsafe_allow_html=True)
 
 st.write("---")
 
 with st.sidebar:
     st.header("Bestiary & Lore ⚔️")
-    st.info("""
-    **Signs (Base Force)**
-    \nKekuatan dasar sihir Witcher yang menggeser alfabet.
-    
-    **Mutagens (Modifier)**
-    \nRamuan kimiawi yang melipatgandakan atau menambah kekuatan Sign.
-    """)
-    st.warning("⚠️ Hanya huruf a-z yang diproses. Spasi diabaikan.")
-    
-tab_encrypt, tab_decrypt = st.tabs(["🔒 CAST SPELL (Encrypt)", "🔓 DISPEL MAGIC (Decrypt)"])
+    st.info("Kombinasikan **Sign** dan **Mutagen** untuk menyandikan pesan rahasia.")
+    st.markdown("---")
+    st.caption("School of the Wolf © 1272")
+
+tab_encrypt, tab_decrypt = st.tabs(["🔒 CAST SPELL", "🔓 DISPEL MAGIC"])
+
+# Placeholder untuk efek kabut (wajib ditaruh sebelum tombol ditekan)
+fog_placeholder = st.empty()
 
 # ===============================
 # TAB ENKRIPSI
@@ -201,22 +221,26 @@ with tab_encrypt:
     
     c1, c2 = st.columns(2)
     with c1:
-        sign_in = st.selectbox("Select Witcher Sign", list(SIGN_SHIFT.keys()), key="sign_e")
+        sign_in = st.selectbox("Select Sign", list(SIGN_SHIFT.keys()), key="s_e")
     with c2:
-        mut_in = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="mut_e")
+        mut_in = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="m_e")
         
-    plaintext = st.text_area("Enter Message to Hide", height=100, placeholder="Type your secret here...")
+    plaintext = st.text_area("Plaintext Message", height=100, placeholder="Secret message...")
 
     if st.button("🔮 CAST CIPHER"):
         if plaintext:
-            # EFEK PARTIKEL SALJU (MAGIC DUST)
-            st.snow() 
+            # 1. TRIGGER EFEK KABUT (MIASMA)
+            fog_placeholder.markdown('<div class="miasma-overlay"></div>', unsafe_allow_html=True)
             
-            with st.spinner("Weaving the magic..."):
-                time.sleep(1.2) # Sedikit delay untuk menikmati animasi loading
+            # 2. PROSES
+            with st.spinner("Summoning fog & chaos..."):
+                time.sleep(2.0) # Waktu untuk melihat animasi kabut
                 res, logs = process_cipher(plaintext, sign_in, mut_in, "encrypt")
             
-            # MEMBUNGKUS HASIL DALAM DIV YANG DIANIMASIKAN
+            # 3. BERSIHKAN KABUT (Opsional, animasi CSS akan hilang sendiri tapi ini memastikan bersih)
+            fog_placeholder.empty()
+
+            # 4. TAMPILKAN HASIL
             st.markdown(f"""
             <div class="result-box">
                 <h4 style="color:#d4af37; margin-top:0;">✨ Sealed Message:</h4>
@@ -224,13 +248,13 @@ with tab_encrypt:
             </div>
             """, unsafe_allow_html=True)
             
-            st.success("Spell cast successfully.")
+            st.success("Message sealed in the mists.")
             
-            with st.expander("Show Spell Trace (Debug Log)"):
+            with st.expander("Show Spell Trace"):
                 for log in logs:
                     st.markdown(log)
         else:
-            st.error("You cannot cast a spell on nothingness.")
+            st.warning("Cannot cast on emptiness.")
 
 # ===============================
 # TAB DEKRIPSI
@@ -240,19 +264,23 @@ with tab_decrypt:
     
     c1, c2 = st.columns(2)
     with c1:
-        sign_de = st.selectbox("Select Witcher Sign", list(SIGN_SHIFT.keys()), key="sign_d")
+        sign_de = st.selectbox("Select Sign", list(SIGN_SHIFT.keys()), key="s_d")
     with c2:
-        mut_de = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="mut_d")
+        mut_de = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="m_d")
         
-    ciphertext = st.text_input("Enter Encrypted Runes")
+    ciphertext = st.text_input("Ciphertext String")
 
     if st.button("🗡️ BREAK CURSE"):
         if ciphertext:
-            with st.spinner("Examining traces..."):
-                time.sleep(1.0)
+            # 1. TRIGGER EFEK KABUT
+            fog_placeholder.markdown('<div class="miasma-overlay"></div>', unsafe_allow_html=True)
+            
+            with st.spinner("Clearing the fog..."):
+                time.sleep(2.0)
                 res, logs = process_cipher(ciphertext, sign_de, mut_de, "decrypt")
             
-            # MEMBUNGKUS HASIL DALAM DIV YANG DIANIMASIKAN
+            fog_placeholder.empty()
+
             st.markdown(f"""
             <div class="result-box">
                 <h4 style="color:#d4af37; margin-top:0;">🔓 Revealed Message:</h4>
@@ -260,14 +288,13 @@ with tab_decrypt:
             </div>
             """, unsafe_allow_html=True)
             
-            st.success("Curse Lifted!")
+            st.success("Curse Lifted.")
             
-            with st.expander("Show Investigation Notes (Debug Log)"):
+            with st.expander("Show Investigation"):
                 for log in logs:
                     st.markdown(log)
         else:
-            st.error("No runes detected to decipher.")
+            st.warning("No runes detected.")
 
-# Footer
 st.write("---")
-st.markdown("<div style='text-align: center; color: #555;'>Created for the School of the Wolf 🐺 | Python & Streamlit</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: #555;'>Created for the School of the Wolf 🐺</div>", unsafe_allow_html=True)
