@@ -91,9 +91,9 @@ def decrypt(ciphertext, sign, mutagen):
 # ===============================
 # STREAMLIT UI
 # ===============================
-st.set_page_config(page_title="Witcher Cipher", page_icon="🧙")
+st.set_page_config(page_title="Witcher Cipher", page_icon="🐺")
 
-st.title("🧙 Witcher Cipher")
+st.title("🐺 Witcher Cipher")
 st.caption("Enkripsi & Dekripsi berbasis Sign dan Mutagen")
 
 mode = st.radio("Pilih Mode", ["Enkripsi", "Dekripsi"])
