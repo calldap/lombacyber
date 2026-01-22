@@ -6,99 +6,85 @@ import time
 # KONFIGURASI HALAMAN & CSS
 # ===============================
 st.set_page_config(
-    page_title="Witcher Cipher",
+    page_title="Wolf School Cipher",
     page_icon="🐺",
     layout="centered",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
-# Custom CSS untuk Tema The Witcher (Tanpa Gambar)
+# Custom CSS untuk Tema The Witcher (Versi Premium)
 st.markdown("""
     <style>
-        /* Import Font Cinzel untuk nuansa Medieval */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap');
 
-        /* Background Gelap Total */
+        /* Background Gelap Textur Premium */
         .stApp {
-            background-color: #0e0e0e;
+            background-color: #121212;
+            background-image: linear-gradient(315deg, #0b0b0b 0%, #1f1f1f 74%);
             color: #dcdcdc;
             font-family: 'Lato', sans-serif;
         }
 
-        /* Judul & Header dengan Font Cinzel */
+        /* Judul Utama */
         h1, h2, h3 {
             font-family: 'Cinzel', serif;
-            color: #c93838; /* Merah Darah/Witcher */
-            text-shadow: 0px 0px 10px rgba(201, 56, 56, 0.5);
-            text-align: center;
+            color: #c93838; /* Warna Merah Witcher */
+            text-shadow: 2px 2px 4px #000000;
         }
         
-        /* Subtitle Styling */
-        .subtitle {
+        /* Sub-text / Quotes */
+        .quote {
             font-family: 'Cinzel', serif;
-            color: #8c8c8c;
-            text-align: center;
-            margin-top: -15px;
-            margin-bottom: 30px;
-            font-size: 1.2rem;
+            color: #d4af37; /* Emas Pudar */
+            font-style: italic;
         }
 
-        /* Input Fields Styling */
+        /* Custom Input Fields */
         .stTextInput > div > div > input, .stTextArea > div > div > textarea {
-            background-color: #1a1a1a;
+            background-color: #1e1e1e;
             color: #e0e0e0;
-            border: 1px solid #444;
+            border: 1px solid #555;
             font-family: 'Courier New', monospace;
         }
+        
+        /* Dropdown */
         .stSelectbox > div > div > div {
-             background-color: #1a1a1a;
-             color: #e0e0e0;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
         }
 
-        /* Tombol Utama - Merah Gelap */
+        /* Custom Buttons (Glow Effect) */
         .stButton > button {
             background-color: #380c0c;
             color: #e0e0e0;
             border: 1px solid #c93838;
             font-family: 'Cinzel', serif;
-            font-weight: bold;
             width: 100%;
             transition: 0.3s;
-            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
         .stButton > button:hover {
             background-color: #c93838;
             color: #ffffff;
             border-color: #ff5555;
             box-shadow: 0 0 15px #c93838;
+            transform: scale(1.02);
         }
 
-        /* Custom Tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 10px;
-        }
-        .stTabs [data-baseweb="tab"] {
-            background-color: #1a1a1a;
-            border-radius: 4px;
-            color: #888;
-            border: 1px solid #333;
-        }
-        .stTabs [data-baseweb="tab"][aria-selected="true"] {
-            background-color: #2d2d2d;
-            color: #c93838;
-            border-color: #c93838;
-        }
-
-        /* Code Block Result */
-        code {
-            color: #d4af37; /* Warna Emas */
-            background-color: #111;
-            font-weight: bold;
+        /* Expander Styling (Quest Log) */
+        .streamlit-expanderHeader {
+            background-color: #1e1e1e;
+            color: #d4af37; /* Gold */
+            font-family: 'Cinzel', serif;
         }
         
-        /* Divider Custom */
-        hr {
-            border-color: #333;
+        /* Styling untuk Emoji Besar di Header */
+        .big-emoticon {
+            font-size: 80px;
+            text-align: center;
+            line-height: 1.2;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -146,17 +132,17 @@ def process_cipher(text, sign, mutagen, mode="encrypt"):
     base_shift = SIGN_SHIFT[sign]
     final_shift = apply_mutagen(base_shift, mutagen)
     
-    logs.append(f"🌀 **Sign:** {sign.capitalize()} (Base: {base_shift})")
+    logs.append(f"🛡️ **Sign Used:** {sign.capitalize()} (Base: {base_shift})")
     logs.append(f"🧪 **Mutagen:** {mutagen} (Final Shift: {final_shift})")
 
     clean_text = text.lower().replace(" ", "") if mode == "encrypt" else text
     
     if mode == "encrypt":
-        logs.append(f"📜 **Raw:** `{clean_text}`")
+        logs.append(f"📜 **Raw Input:** `{clean_text}`")
         shifted = "".join([shift_char(c, final_shift) for c in clean_text])
         logs.append(f"✨ **Shifted:** `{shifted}`")
         result, swap_log = swap_pairs(shifted)
-        logs.append(f"⚔️ **Swapped:**\n{swap_log}")
+        logs.append(f"⚔️ **Swapped Pairs:**\n{swap_log}")
     else:
         unswapped, swap_log = swap_pairs(clean_text)
         logs.append(f"⚔️ **Un-swapped:** `{unswapped}`")
@@ -165,77 +151,99 @@ def process_cipher(text, sign, mutagen, mode="encrypt"):
     return result, logs
 
 # ===============================
-# UI UTAMA
+# UI COMPONENTS
 # ===============================
 
-# Header Title dengan Emoji Besar
-st.markdown("<h1>🐺 THE WITCHER CIPHER ⚔️</h1>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>School of the Wolf Cryptography</div>", unsafe_allow_html=True)
+# Header dengan Layout Kolom (Logo Emoji Kiri, Teks Kanan)
+col1, col2 = st.columns([1, 4])
 
-# Layout Tabs
-tab_encrypt, tab_decrypt = st.tabs(["🔒 ENCRYPT (MANTRA)", "🔓 DECRYPT (DISPEL)"])
+with col1:
+    # Menggantikan st.image dengan HTML Emoji Besar
+    st.markdown('<div class="big-emoticon">🐺</div>', unsafe_allow_html=True)
 
-# --- TAB ENKRIPSI ---
-with tab_encrypt:
-    st.markdown("### 📝 Inscribe Runes")
+with col2:
+    st.title("The Wolf Cipher")
+    st.markdown('<div class="quote">"Medallion\'s humming... a hidden message, it\'s gotta be."</div>', unsafe_allow_html=True)
+
+st.write("---")
+
+# Sidebar Lore
+with st.sidebar:
+    st.header("Bestiary & Lore ⚔️")
+    st.info("""
+    **Signs (Base Force)**
+    \nKekuatan dasar sihir Witcher yang menggeser alfabet.
     
-    col1, col2 = st.columns(2)
-    with col1:
-        sign_e = st.selectbox("Select Sign (Base Force)", list(SIGN_SHIFT.keys()), key="s_e")
-    with col2:
-        mut_e = st.selectbox("Select Mutagen (Modifier)", ["lesser red", "red", "greater red", "lesser blue", "green"], key="m_e")
-        
-    plaintext = st.text_area("Plaintext Message", height=100, placeholder="write your secret here...")
+    **Mutagens (Modifier)**
+    \nRamuan kimiawi yang melipatgandakan atau menambah kekuatan Sign.
+    """)
+    st.warning("⚠️ Hanya huruf a-z yang diproses. Spasi diabaikan.")
+    st.markdown("---")
+    st.caption("School of the Wolf © 1272")
 
-    if st.button("🔥 Cast Encryption Spell"):
+# Tab Layout
+tab_encrypt, tab_decrypt = st.tabs(["🔒 CAST SPELL (Encrypt)", "🔓 DISPEL MAGIC (Decrypt)"])
+
+# ===============================
+# TAB ENKRIPSI
+# ===============================
+with tab_encrypt:
+    st.subheader("Inscribe Runes")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        sign_in = st.selectbox("Select Witcher Sign", list(SIGN_SHIFT.keys()), key="sign_e")
+    with c2:
+        mut_in = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="mut_e")
+        
+    plaintext = st.text_area("Enter Message to Hide", height=100, placeholder="Type your secret here...")
+
+    if st.button("🔮 CAST CIPHER"):
         if plaintext:
             with st.spinner("Channeling Chaos..."):
                 time.sleep(0.8)
-                res, logs = process_cipher(plaintext, sign_e, mut_e, "encrypt")
+                res, logs = process_cipher(plaintext, sign_in, mut_in, "encrypt")
             
-            st.success("Message Sealed!")
-            st.markdown("#### 📜 Ciphertext Result")
+            st.success("Message Sealed Successfully!")
+            st.markdown("### 📜 Sealed Scroll (Result)")
             st.code(res, language=None)
             
-            with st.expander("👁️ View Spell Trace"):
+            with st.expander("Show Spell Trace (Debug Log)"):
                 for log in logs:
-                    st.write(log)
+                    st.markdown(log)
         else:
-            st.warning("Needs text to cast spell.")
+            st.error("You cannot cast a spell on nothingness.")
 
-# --- TAB DEKRIPSI ---
+# ===============================
+# TAB DEKRIPSI
+# ===============================
 with tab_decrypt:
-    st.markdown("### 🧩 Analyze Runes")
+    st.subheader("Analyze Runes")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        sign_d = st.selectbox("Select Sign", list(SIGN_SHIFT.keys()), key="s_d")
-    with col2:
-        mut_d = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="m_d")
+    c1, c2 = st.columns(2)
+    with c1:
+        sign_de = st.selectbox("Select Witcher Sign", list(SIGN_SHIFT.keys()), key="sign_d")
+    with c2:
+        mut_de = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="mut_d")
         
-    ciphertext = st.text_input("Ciphertext String")
+    ciphertext = st.text_input("Enter Encrypted Runes")
 
-    if st.button("🗡️ Break Curse (Decrypt)"):
+    if st.button("🗡️ BREAK CURSE"):
         if ciphertext:
-            with st.spinner("Deciphering Runes..."):
+            with st.spinner("Examining traces..."):
                 time.sleep(0.8)
-                res, logs = process_cipher(ciphertext, sign_d, mut_d, "decrypt")
+                res, logs = process_cipher(ciphertext, sign_de, mut_de, "decrypt")
             
-            st.success("Message Revealed!")
-            st.markdown("#### 📜 Plaintext Result")
+            st.success("Curse Lifted! Message Revealed.")
+            st.markdown("### 📜 Revealed Message")
             st.code(res, language=None)
             
-            with st.expander("👁️ View Investigation"):
+            with st.expander("Show Investigation Notes (Debug Log)"):
                 for log in logs:
-                    st.write(log)
+                    st.markdown(log)
         else:
-            st.warning("Needs runes to decrypt.")
+            st.error("No runes detected to decipher.")
 
-# Footer Minimalis
+# Footer
 st.write("---")
-st.markdown(
-    "<div style='text-align: center; color: #666; font-size: 0.8em;'>"
-    "⚔️ White Wolf Tools | Python Streamlit 🐍"
-    "</div>", 
-    unsafe_allow_html=True
-)
+st.markdown("<div style='text-align: center; color: #555;'>Created for the School of the Wolf 🐺 | Python & Streamlit</div>", unsafe_allow_html=True)
