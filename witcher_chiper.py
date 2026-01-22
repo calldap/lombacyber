@@ -97,6 +97,17 @@ st.markdown("""
             font-size: 1.1em;
         }
 
+        /* Tabel di Sidebar */
+        .sidebar-table {
+            width: 100%;
+            font-size: 0.9em;
+            border-collapse: collapse;
+        }
+        .sidebar-table td {
+            padding: 4px;
+            border-bottom: 1px solid #333;
+        }
+
         .stTextInput > div > div > input, .stTextArea > div > div > textarea {
             background-color: #1e1e1e;
             color: #e0e0e0;
@@ -196,16 +207,46 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.markdown('<div class="wolf-anim">🐺</div>', unsafe_allow_html=True)
 with col2:
-    # --- JUDUL & QUOTE YANG DIMINTA ---
     st.title("Witcher Cipher")
     st.markdown('<div class="quote">"Medallion\'s humming... a hidden message, it\'s gotta be."</div>', unsafe_allow_html=True)
 
 st.write("---")
 
+# ===============================
+# SIDEBAR LORE (DIPERBARUI)
+# ===============================
 with st.sidebar:
     st.header("Bestiary & Lore ⚔️")
-    st.info("Kombinasikan **Sign** dan **Mutagen** untuk menyandikan pesan rahasia.")
+    
+    st.markdown("""
+    **Mekanisme Enkripsi:**
+    1. **Shift:** Huruf digeser berdasarkan kekuatan *Sign* dan *Mutagen*.
+    2. **Swap:** Setiap pasangan huruf ditukar posisinya (misal: `AB` -> `BA`).
+    """)
+    
     st.markdown("---")
+    
+    st.subheader("1. Sign (Base Shift)")
+    st.markdown("""
+    | Sign | Element | Shift |
+    | :--- | :--- | :---: |
+    | 💨 **Aard** | Telekinetic | `+3` |
+    | 🟣 **Yrden** | Trap | `+5` |
+    | 🛡️ **Quen** | Shield | `+8` |
+    | 🔮 **Axii** | Mind | `+10` |
+    | 🔥 **Igni** | Fire | `+12` |
+    """)
+    
+    st.subheader("2. Mutagen Modifiers")
+    st.info("""
+    **Effect on Base Shift:**
+    * 🔴 **Lesser Red:** `+ 2`
+    * 🔴 **Red:** `x 2` (Kali 2)
+    * 🔴 **Greater Red:** `x 3` (Kali 3)
+    * 🔵 **Lesser Blue:** `+ 5`
+    * 🟢 **Green:** `(Base + 10) / 2`
+    """)
+    
     st.caption("School of the Wolf © 1272")
 
 tab_encrypt, tab_decrypt = st.tabs(["🔒 CAST SPELL", "🔓 DISPEL MAGIC"])
@@ -234,7 +275,7 @@ with tab_encrypt:
             
             # 2. PROSES
             with st.spinner("Channeling Chaos..."):
-                time.sleep(2.0) # Waktu untuk melihat animasi kabut
+                time.sleep(2.0)
                 res, logs = process_cipher(plaintext, sign_in, mut_in, "encrypt")
             
             # 3. BERSIHKAN KABUT
