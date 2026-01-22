@@ -6,13 +6,13 @@ import time
 # KONFIGURASI HALAMAN & CSS
 # ===============================
 st.set_page_config(
-    page_title="Wolf School Cipher",
+    page_title="Witcher Cipher",
     page_icon="🐺",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS dengan ANIMASI KABUT (MIASMA)
+# Custom CSS dengan ANIMASI & KABUT
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap');
@@ -20,7 +20,6 @@ st.markdown("""
         /* --- 1. Background & Font --- */
         .stApp {
             background-color: #0e0e0e;
-            /* Gradient background yang lebih gelap dan misterius */
             background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
             color: #dcdcdc;
             font-family: 'Lato', sans-serif;
@@ -60,9 +59,8 @@ st.markdown("""
             left: 0;
             width: 100vw;
             height: 100vh;
-            pointer-events: none; /* Agar klik tembus ke bawah */
+            pointer-events: none;
             z-index: 9999;
-            /* Membuat efek kabut menggunakan gradient transparan */
             background: linear-gradient(
                 120deg, 
                 rgba(20, 40, 20, 0.0) 0%, 
@@ -96,6 +94,7 @@ st.markdown("""
             font-family: 'Cinzel', serif;
             color: #d4af37;
             font-style: italic;
+            font-size: 1.1em;
         }
 
         .stTextInput > div > div > input, .stTextArea > div > div > textarea {
@@ -197,8 +196,9 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.markdown('<div class="wolf-anim">🐺</div>', unsafe_allow_html=True)
 with col2:
-    st.title("The Wolf Cipher")
-    st.markdown('<div class="quote">"Fog\'s thick as curdled milk..."</div>', unsafe_allow_html=True)
+    # --- JUDUL & QUOTE YANG DIMINTA ---
+    st.title("Witcher Cipher")
+    st.markdown('<div class="quote">"Medallion\'s humming... a hidden message, it\'s gotta be."</div>', unsafe_allow_html=True)
 
 st.write("---")
 
@@ -210,7 +210,7 @@ with st.sidebar:
 
 tab_encrypt, tab_decrypt = st.tabs(["🔒 CAST SPELL", "🔓 DISPEL MAGIC"])
 
-# Placeholder untuk efek kabut (wajib ditaruh sebelum tombol ditekan)
+# Placeholder untuk efek kabut
 fog_placeholder = st.empty()
 
 # ===============================
@@ -233,11 +233,11 @@ with tab_encrypt:
             fog_placeholder.markdown('<div class="miasma-overlay"></div>', unsafe_allow_html=True)
             
             # 2. PROSES
-            with st.spinner("Summoning fog & chaos..."):
+            with st.spinner("Channeling Chaos..."):
                 time.sleep(2.0) # Waktu untuk melihat animasi kabut
                 res, logs = process_cipher(plaintext, sign_in, mut_in, "encrypt")
             
-            # 3. BERSIHKAN KABUT (Opsional, animasi CSS akan hilang sendiri tapi ini memastikan bersih)
+            # 3. BERSIHKAN KABUT
             fog_placeholder.empty()
 
             # 4. TAMPILKAN HASIL
@@ -275,7 +275,7 @@ with tab_decrypt:
             # 1. TRIGGER EFEK KABUT
             fog_placeholder.markdown('<div class="miasma-overlay"></div>', unsafe_allow_html=True)
             
-            with st.spinner("Clearing the fog..."):
+            with st.spinner("Examining traces..."):
                 time.sleep(2.0)
                 res, logs = process_cipher(ciphertext, sign_de, mut_de, "decrypt")
             
