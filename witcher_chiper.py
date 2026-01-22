@@ -1,96 +1,65 @@
 import streamlit as st
 import string
-import time
 
 # ===============================
-# KONFIGURASI HALAMAN & CSS
+# PAGE CONFIG
 # ===============================
 st.set_page_config(
-    page_title="Wolf School Cipher",
+    page_title="Witcher Cipher",
     page_icon="🐺",
-    layout="centered",
-    initial_sidebar_state="expanded"
+    layout="centered"
 )
 
-# Custom CSS untuk Tema The Witcher (Versi Premium)
+# ===============================
+# CUSTOM CSS (THE WITCHER THEME)
+# ===============================
 st.markdown("""
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap');
-
-        /* Background Gelap Textur Premium */
-        .stApp {
-            background-color: #121212;
-            background-image: linear-gradient(315deg, #0b0b0b 0%, #1f1f1f 74%);
-            color: #dcdcdc;
-            font-family: 'Lato', sans-serif;
-        }
-
-        /* Judul Utama */
-        h1, h2, h3 {
-            font-family: 'Cinzel', serif;
-            color: #c93838; /* Warna Merah Witcher */
-            text-shadow: 2px 2px 4px #000000;
-        }
-        
-        /* Sub-text / Quotes */
-        .quote {
-            font-family: 'Cinzel', serif;
-            color: #d4af37; /* Emas Pudar */
-            font-style: italic;
-        }
-
-        /* Custom Input Fields */
-        .stTextInput > div > div > input, .stTextArea > div > div > textarea {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-            border: 1px solid #555;
-            font-family: 'Courier New', monospace;
-        }
-        
-        /* Dropdown */
-        .stSelectbox > div > div > div {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-        }
-
-        /* Custom Buttons (Glow Effect) */
-        .stButton > button {
-            background-color: #380c0c;
-            color: #e0e0e0;
-            border: 1px solid #c93838;
-            font-family: 'Cinzel', serif;
-            width: 100%;
-            transition: 0.3s;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        .stButton > button:hover {
-            background-color: #c93838;
-            color: #ffffff;
-            border-color: #ff5555;
-            box-shadow: 0 0 15px #c93838;
-            transform: scale(1.02);
-        }
-
-        /* Expander Styling (Quest Log) */
-        .streamlit-expanderHeader {
-            background-color: #1e1e1e;
-            color: #d4af37; /* Gold */
-            font-family: 'Cinzel', serif;
-        }
-        
-        /* Styling untuk Emoji Besar di Header */
-        .big-emoticon {
-            font-size: 80px;
-            text-align: center;
-            line-height: 1.2;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-    </style>
+<style>
+body {
+    background-color: #0e0e11;
+}
+.block-container {
+    padding-top: 2rem;
+}
+h1, h2, h3 {
+    color: #e5e7eb;
+    font-family: 'Trebuchet MS', serif;
+}
+.stRadio > label, .stSelectbox label, .stTextInput label {
+    font-weight: bold;
+    color: #d1d5db;
+}
+.stButton > button {
+    background: linear-gradient(135deg, #1f2933, #111827);
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+    padding: 0.6rem 1.4rem;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.stButton > button:hover {
+    background: linear-gradient(135deg, #374151, #1f2937);
+    border-color: #9ca3af;
+}
+hr {
+    border: 1px solid #374151;
+}
+</style>
 """, unsafe_allow_html=True)
 
 # ===============================
-# LOGIKA KRIPTOGRAFI
+# HEADER
+# ===============================
+st.markdown("""
+<h1>🐺 Witcher Cipher</h1>
+<p style="color:#9ca3af; margin-top:-10px;">
+Arcane Encryption & Decryption based on Witcher Signs and Mutagens
+</p>
+<hr>
+""", unsafe_allow_html=True)
+
+# ===============================
+# KONFIGURASI CIPHER
 # ===============================
 ALPHABET = string.ascii_lowercase
 
@@ -102,148 +71,129 @@ SIGN_SHIFT = {
     "axii": 10
 }
 
+MUTAGENS = [
+    "lesser red",
+    "red",
+    "greater red",
+    "lesser blue",
+    "green"
+]
+
+# ===============================
+# FUNGSI CIPHER
+# ===============================
 def apply_mutagen(shift, mutagen):
-    if mutagen == "lesser red": return shift + 2
-    elif mutagen == "red": return shift * 2
-    elif mutagen == "greater red": return shift * 3
-    elif mutagen == "lesser blue": return shift + 5
-    elif mutagen == "green": return (shift + 10) // 2
-    else: return shift
+    if mutagen == "lesser red":
+        return shift + 2
+    elif mutagen == "red":
+        return shift * 2
+    elif mutagen == "greater red":
+        return shift * 3
+    elif mutagen == "lesser blue":
+        return shift + 5
+    elif mutagen == "green":
+        return (shift + 10) // 2
 
 def shift_char(c, shift):
-    if c not in ALPHABET: return c
     return ALPHABET[(ALPHABET.index(c) + shift) % 26]
 
 def unshift_char(c, shift):
-    if c not in ALPHABET: return c
     return ALPHABET[(ALPHABET.index(c) - shift) % 26]
 
 def swap_pairs(text):
     chars = list(text)
     log = []
     for i in range(0, len(chars)-1, 2):
-        if chars[i] in ALPHABET and chars[i+1] in ALPHABET:
-            log.append(f"[{chars[i]} ⇄ {chars[i+1]}]")
-            chars[i], chars[i+1] = chars[i+1], chars[i]
-    return ''.join(chars), "  ".join(log)
+        log.append(f"{chars[i]} ↔ {chars[i+1]}")
+        chars[i], chars[i+1] = chars[i+1], chars[i]
+    return ''.join(chars), ", ".join(log)
 
-def process_cipher(text, sign, mutagen, mode="encrypt"):
+def encrypt(plaintext, sign, mutagen):
     logs = []
+
     base_shift = SIGN_SHIFT[sign]
     final_shift = apply_mutagen(base_shift, mutagen)
-    
-    logs.append(f"🛡️ **Sign Used:** {sign.capitalize()} (Base: {base_shift})")
-    logs.append(f"🧪 **Mutagen:** {mutagen} (Final Shift: {final_shift})")
 
-    clean_text = text.lower().replace(" ", "") if mode == "encrypt" else text
-    
-    if mode == "encrypt":
-        logs.append(f"📜 **Raw Input:** `{clean_text}`")
-        shifted = "".join([shift_char(c, final_shift) for c in clean_text])
-        logs.append(f"✨ **Shifted:** `{shifted}`")
-        result, swap_log = swap_pairs(shifted)
-        logs.append(f"⚔️ **Swapped Pairs:**\n{swap_log}")
-    else:
-        unswapped, swap_log = swap_pairs(clean_text)
-        logs.append(f"⚔️ **Un-swapped:** `{unswapped}`")
-        result = "".join([unshift_char(c, final_shift) for c in unswapped])
-        
+    logs.append(f"🜂 Sign '{sign.upper()}' → Base Shift = {base_shift}")
+    logs.append(f"🧪 Mutagen '{mutagen}' → Final Shift = {final_shift}")
+
+    text = plaintext.lower().replace(" ", "")
+    logs.append(f"✂ Cleaned Text → {text}")
+
+    shifted = ''.join(shift_char(c, final_shift) for c in text)
+    logs.append(f"🜁 Arcane Shift → {shifted}")
+
+    result, swap_log = swap_pairs(shifted)
+    logs.append(f"🔁 Rune Swap → {swap_log}")
+
     return result, logs
 
-# ===============================
-# UI COMPONENTS
-# ===============================
+def decrypt(ciphertext, sign, mutagen):
+    logs = []
 
-# Header dengan Layout Kolom (Logo Emoji Kiri, Teks Kanan)
-col1, col2 = st.columns([1, 4])
+    final_shift = apply_mutagen(SIGN_SHIFT[sign], mutagen)
+    logs.append(f"🜂 Total Shift = {final_shift}")
+
+    unswapped, swap_log = swap_pairs(ciphertext)
+    logs.append(f"🔁 Reverse Swap → {swap_log}")
+
+    plaintext = ''.join(unshift_char(c, final_shift) for c in unswapped)
+    logs.append(f"✨ Revealed Text → {plaintext}")
+
+    return plaintext, logs
+
+# ===============================
+# UI PANEL (RPG STYLE)
+# ===============================
+mode = st.radio("⚔ Choose Ritual", ["Enkripsi", "Dekripsi"], horizontal=True)
+
+col1, col2 = st.columns(2)
 
 with col1:
-    # Menggantikan st.image dengan HTML Emoji Besar
-    st.markdown('<div class="big-emoticon">🐺</div>', unsafe_allow_html=True)
+    sign = st.selectbox("🜂 Select Witcher Sign", list(SIGN_SHIFT.keys()))
 
 with col2:
-    st.title("The Wolf Cipher")
-    st.markdown('<div class="quote">"Medallion\'s humming... a hidden message, it\'s gotta be."</div>', unsafe_allow_html=True)
+    mutagen = st.selectbox("🧪 Select Mutagen", MUTAGENS)
 
-st.write("---")
-
-# Sidebar Lore
-with st.sidebar:
-    st.header("Bestiary & Lore ⚔️")
-    st.info("""
-    **Signs (Base Force)**
-    \nKekuatan dasar sihir Witcher yang menggeser alfabet.
-    
-    **Mutagens (Modifier)**
-    \nRamuan kimiawi yang melipatgandakan atau menambah kekuatan Sign.
-    """)
-    st.warning("⚠️ Hanya huruf a-z yang diproses. Spasi diabaikan.")
-    st.markdown("---")
-    st.caption("School of the Wolf © 1272")
-
-# Tab Layout
-tab_encrypt, tab_decrypt = st.tabs(["🔒 CAST SPELL (Encrypt)", "🔓 DISPEL MAGIC (Decrypt)"])
+st.divider()
 
 # ===============================
-# TAB ENKRIPSI
+# ACTION
 # ===============================
-with tab_encrypt:
-    st.subheader("Inscribe Runes")
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        sign_in = st.selectbox("Select Witcher Sign", list(SIGN_SHIFT.keys()), key="sign_e")
-    with c2:
-        mut_in = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="mut_e")
-        
-    plaintext = st.text_area("Enter Message to Hide", height=100, placeholder="Type your secret here...")
+if mode == "Enkripsi":
+    plaintext = st.text_input("📜 Enter Plaintext")
 
-    if st.button("🔮 CAST CIPHER"):
+    if st.button("🔐 Cast Encryption Spell"):
         if plaintext:
-            with st.spinner("Channeling Chaos..."):
-                time.sleep(0.8)
-                res, logs = process_cipher(plaintext, sign_in, mut_in, "encrypt")
-            
-            st.success("Message Sealed Successfully!")
-            st.markdown("### 📜 Sealed Scroll (Result)")
-            st.code(res, language=None)
-            
-            with st.expander("Show Spell Trace (Debug Log)"):
+            result, logs = encrypt(plaintext, sign, mutagen)
+            st.success(f"🧾 Ciphertext: **{result}**")
+
+            with st.expander("📖 Arcane Process Log"):
                 for log in logs:
-                    st.markdown(log)
+                    st.write(log)
         else:
-            st.error("You cannot cast a spell on nothingness.")
+            st.warning("⚠ Plaintext tidak boleh kosong")
 
-# ===============================
-# TAB DEKRIPSI
-# ===============================
-with tab_decrypt:
-    st.subheader("Analyze Runes")
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        sign_de = st.selectbox("Select Witcher Sign", list(SIGN_SHIFT.keys()), key="sign_d")
-    with c2:
-        mut_de = st.selectbox("Select Mutagen", ["lesser red", "red", "greater red", "lesser blue", "green"], key="mut_d")
-        
-    ciphertext = st.text_input("Enter Encrypted Runes")
+else:
+    ciphertext = st.text_input("📜 Enter Ciphertext")
 
-    if st.button("🗡️ BREAK CURSE"):
+    if st.button("🔓 Break the Cipher"):
         if ciphertext:
-            with st.spinner("Examining traces..."):
-                time.sleep(0.8)
-                res, logs = process_cipher(ciphertext, sign_de, mut_de, "decrypt")
-            
-            st.success("Curse Lifted! Message Revealed.")
-            st.markdown("### 📜 Revealed Message")
-            st.code(res, language=None)
-            
-            with st.expander("Show Investigation Notes (Debug Log)"):
-                for log in logs:
-                    st.markdown(log)
-        else:
-            st.error("No runes detected to decipher.")
+            result, logs = decrypt(ciphertext, sign, mutagen)
+            st.success(f"🧾 Plaintext: **{result}**")
 
-# Footer
-st.write("---")
-st.markdown("<div style='text-align: center; color: #555;'>Created for the School of the Wolf 🐺 | Python & Streamlit</div>", unsafe_allow_html=True)
+            with st.expander("📖 Arcane Process Log"):
+                for log in logs:
+                    st.write(log)
+        else:
+            st.warning("⚠ Ciphertext tidak boleh kosong")
+
+# ===============================
+# FOOTER
+# ===============================
+st.markdown("""
+<hr>
+<p style="text-align:center; color:#9ca3af;">
+🏆 Internal Department Competition • Inspired by The Witcher Universe
+</p>
+""", unsafe_allow_html=True)
